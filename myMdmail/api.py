@@ -50,7 +50,7 @@ def send(email, subject=None,
     msg["To"] = Header("订阅者", 'utf-8')
     msg["Subject"] = Header((subject or email.headers.get('subject', '')), 'utf-8')
     smtp_obj = smtplib.SMTP_SSL(host=smtp["host"], port=smtp["port"])
-    smtp_obj.connect(host=smtp["host"], port=smtp["port"])  # 25 为 SMTP 端口号
+    smtp_obj.connect(host=smtp["host"], port=smtp["port"])
     smtp_obj.login(smtp["user"], smtp["password"])
     r = smtp_obj.sendmail(from_email, bcc, msg.as_string())
     smtp_obj.quit()

@@ -10,6 +10,7 @@ import logging
 import myMdmail
 
 db_url = "mongodb://127.0.0.1:27017/"
+db_name = "your_database_name"
 logging.basicConfig(level=logging.INFO)
 smtp_host = 'smtp.qiye.aliyun.com'
 imap_host = 'imap.qiye.aliyun.com'
@@ -32,7 +33,7 @@ def send_email(target: list, subject: str, content: str, sender: str, senderSMTP
 class Setting:
     def __init__(self):
         self.client = pymongo.MongoClient(db_url)
-        self.db = self.client["20AI_course_reminder"]
+        self.db = self.client[db_name]
         self.config_collection = self.db["config"]
 
         self.config = self.config_collection.find_one()
@@ -52,7 +53,7 @@ class Setting:
 
     def refresh(self):
         self.client = pymongo.MongoClient(db_url)
-        self.db = self.client["20AI_course_reminder"]
+        self.db = self.client[db_name]
         self.config_collection = self.db["config"]
 
         self.config = self.config_collection.find_one()
@@ -82,15 +83,6 @@ class Setting:
             self.support_email,
             sep='\n'
         )
-
-    def push_mail_queue(self, target: str, subject: str, content: str, sender: str, senderSMTP: str):
-        self.mail_queue.insert_one({
-            "target": target,
-            "subject": subject,
-            "content": content,
-            "sender": sender,
-            "senderSMTP": senderSMTP
-        })
 
     def add_user(self, user_email: str):
         if user_email in [u["email"] for u in self.users]:
