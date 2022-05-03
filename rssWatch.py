@@ -1,14 +1,15 @@
-from setting import settings, log_info_pure, log_email
+from setting import settings, log_warning_pure, log_email
 import feedparser
 
 
 def rss_watch(website: dict):
     r = ""
     origin: list = website["content"]
-    new = rss_read(website["url"])
-    if len(origin) == 0:
+    new = rss_read(website["rss"])
+    if website["init"]:
         settings.update_content(website["url"], new)
         log_email(f"{website['url']} 已经添加到监视清单",subject=f"{website['name']}已经添加到监视清单")
+        settings.init_website(website["url"])
         return ""
     for i in new:
         if i in origin:
@@ -22,7 +23,7 @@ def rss_watch(website: dict):
             r += f"* 删除了题目 `{j}`\n"
     if r != "":
         settings.update_content(website["url"], new)
-        log_info_pure(f"{website['url']}已更新")
+        log_warning_pure(f"{website['url']}已更新")
         r += "\n"
     return r
 

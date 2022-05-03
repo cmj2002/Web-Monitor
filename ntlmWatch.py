@@ -1,18 +1,18 @@
 import difflib
 import requests
-
-import html2text
 from requests.adapters import HTTPAdapter
+from requests_ntlm import HttpNtlmAuth
+import html2text
 
 from setting import settings, log_warning_pure, log_email
 
 
-def common_read(url: str, charset="utf-8", proxies=None):
+def ntlm_read(url: str, user, password, charset="utf-8", proxies=None):
     """将标准HTML转换为Markdown"""
     s = requests.Session()
     s.mount('http://', HTTPAdapter(max_retries=10))
     s.mount('https://', HTTPAdapter(max_retries=10))
-    response = s.get(url, proxies=proxies)
+    response = s.get(url, auth=HttpNtlmAuth(user, password), proxies=proxies)
     url_data = response.content
     data = url_data.decode(charset, "ignore")
     h = html2text.HTML2Text()
@@ -22,7 +22,7 @@ def common_read(url: str, charset="utf-8", proxies=None):
     return output
 
 
-def common_watch(website: dict):
+def ntlm_watch(website: dict):
     # set proxy
     try:
         proxy = website["socks5"]
@@ -39,7 +39,7 @@ def common_watch(website: dict):
     except KeyError:
         charset = "utf-8"
 
-    new_text = common_read(website["url"], charset, proxies)
+    new_text = ntlm_read(website["url"], website["user"], website["password"], charset, proxies)
     origin_text = website["content"]
     if website["init"]:
         log_email(f"{website['url']} 已经添加到监视清单", subject=f"{website['name']}已经添加到监视清单")

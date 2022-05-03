@@ -4,15 +4,16 @@ import json
 
 from requests.adapters import HTTPAdapter
 
-from setting import settings, log_info_pure, log_email
+from setting import settings, log_warning_pure, log_email, log_info_pure
 
 
 def njubox_watch(website: dict):
     new_text = njubox_read(website["url"], website["password"])
     origin_text = website["content"]
-    if origin_text == "":
+    if website["init"]:
         log_email(f"{website['url']} 已经添加到监视清单", subject=f"{website['name']}已经添加到监视清单")
         settings.update_content(website["url"], new_text)
+        settings.init_website(website["url"])
         return ""
     if new_text == origin_text:
         return ""
@@ -67,7 +68,7 @@ def njubox_watch(website: dict):
         r += "\n"
 
     settings.update_content(website["url"], new_text)
-    log_info_pure(f"{website['url']}已更新")
+    log_warning_pure(f"{website['url']}已更新")
     return r
 
 
@@ -87,10 +88,23 @@ def njubox_read(url: str, password: str):
         'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4'
     }
 
-    r = s.get(url, headers=my_headers)
-    reg = r'<input type="hidden" name="csrfmiddlewaretoken" value="(.*)">'
-    pattern = re.compile(reg)
-    csrfmiddlewaretoken = pattern.findall(r.content.decode('utf-8'))[0]
+
+
+    for i in range(10):
+        try:
+            r = s.get(url, headers=my_headers)
+            reg = r'<input type="hidden" name="csrfmiddlewaretoken" value="(.*)">'
+            pattern = re.compile(reg)
+            csrfmiddlewaretoken = pattern.findall(r.content.decode('utf-8'))[0]
+        except IndexError as e:
+            if i < 9:
+                log_info_pure(f"发生错误：{repr(e)}，进行第{i + 1}次尝试")
+            else:
+                raise e
+            if i==0:
+                print(r.content.decode('utf-8'))
+        else:
+            break
 
     my_data = {
         'csrfmiddlewaretoken': csrfmiddlewaretoken,

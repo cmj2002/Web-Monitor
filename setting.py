@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 import logging
 import myMdmail
+import requests
 
 db_url = "mongodb://127.0.0.1:27017/"
 db_name = "your_database_name"
@@ -27,7 +28,7 @@ def send_email(target: list, subject: str, content: str, sender: str, senderSMTP
         'password': senderSMTP,
     }
     r = myMdmail.send(c, subject, from_email=sender, bcc=target, smtp=smtp)
-    log_info_pure(f"邮件发送完成: {subject}，返回的字典为：\n{r}")
+    log_warning_pure(f"邮件发送完成: {subject}，返回的字典为：\n{r}")
 
 
 class Setting:
@@ -164,16 +165,19 @@ class Setting:
     def update_content(self, url: str, content):
         self.db["websites"].update_one({"url": url}, {"$set": {"content": content}})
 
+    def init_website(self, url: str):
+        self.db["websites"].update_one({"url": url}, {"$set": {"init": False}})
+
 
 settings = Setting()
 
 
+def log_warning_pure(msg: str):
+    logging.warning(time.strftime("%m-%d %H:%M:%S", time.localtime()) + "  " + msg)
+
+
 def log_info_pure(msg: str):
     logging.info(time.strftime("%m-%d %H:%M:%S", time.localtime()) + "  " + msg)
-
-
-def log_debug_pure(msg: str):
-    logging.debug(time.strftime("%m-%d %H:%M:%S", time.localtime()) + "  " + msg)
 
 
 def log_email(msg: str, subject="运行时信息"):

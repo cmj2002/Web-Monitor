@@ -1,7 +1,7 @@
 import urllib.request
 
 import html2text
-from setting import settings, log_info_pure, log_email, log_debug_pure
+from setting import settings, log_warning_pure, log_email, log_info_pure
 import difflib
 
 
@@ -11,9 +11,10 @@ def single_line_watch(website: dict):
     """
     new_text = single_line_read(website["url"])
     origin_text = website["content"]
-    if origin_text == "":
+    if website["init"]:
         log_email(f"{website['url']} 已经添加到监视清单", subject=f"{website['name']}已经添加到监视清单")
         settings.update_content(website["url"], new_text)
+        settings.init_website(website["url"])
         return ""
     elif new_text == origin_text:
         return ""
@@ -37,7 +38,7 @@ def single_line_watch(website: dict):
                  "\n".join(r) + \
                  "\n```\n\n"
         settings.update_content(website["url"], new_text)
-        log_info_pure(f"{website['url']}已更新")
+        log_warning_pure(f"{website['url']}已更新")
         return result
 
 
@@ -50,7 +51,7 @@ def single_line_read(url: str):
             url_data = urllib.request.urlopen(req)
         except Exception as e:
             if i < 9:
-                log_debug_pure(f"发生错误：{repr(e)}，进行第{i + 2}次尝试")
+                log_info_pure(f"发生错误：{repr(e)}，进行第{i + 1}次尝试")
             else:
                 raise e
         else:

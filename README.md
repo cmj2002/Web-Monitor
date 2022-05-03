@@ -22,11 +22,15 @@
 
 ### websites
 
-支持的网站分为四种 `type`：`common`，`single_line`（通常不使用），`njubox`，`rss`，分别有不同的配置方式
+支持的网站分为五种 `type`：`common`，`ntlm`，`single_line`（通常不使用），`njubox`，`rss`，分别有不同的配置方式
 
-下面的例子中 `type`，`content` 不能改，`url` 和 `password` 需要输入目标网站的URL或网盘分享链接的密码。
+下面的例子中：
 
-示例中不包括 `_id` 字段，这是 MongoDB 自带的，如果不了解不要更改或删除。
+* `type`，`content` 不能改
+* `url` 需要输入目标网站的URL
+* `user` 和 `password` 需要输入对应的密码
+* `init` 始终填 `false`，程序初始化之后会把它改成 `true`
+* 不包括 `_id` 字段，这是 MongoDB 自带的，如果不了解不要更改或删除
 
 `common` 类型，检测普通的HTML网页：
 
@@ -34,6 +38,22 @@
 {
   "url": "http://www.example.com/",
   "type": "common",
+  "init": false,
+  "content": "",
+  "name": "example"
+}
+```
+
+`ntlm` 类型，通过 `ntlm` 认证方式进行认证，检测普通的HTML网页：
+
+```json
+{
+  "url": "http://www.example.com/",
+  "name": "example",
+  "init": false,
+  "type": "ntlm",
+  "user": "username",
+  "password": "123456",
   "content": ""
 }
 ```
@@ -43,7 +63,9 @@
 ```json
 {
   "url": "http://www.example.com/",
+  "name": "example",
   "type": "single_line",
+  "init": false,
   "content": ""
 }
 ```
@@ -53,8 +75,10 @@
 ```json
 {
   "url": "https://box.nju.edu.cn/d/<token>/",
+  "name": "example"
   "type": "njubox",
   "password": "123",
+  "init": false,
   "content": ""
 }
 ```
@@ -64,12 +88,21 @@
 ```json
 {
   "url": "http://www.example.com/",
+  "name": "example"
   "type": "rss",
+  "init": false,
   "content": [
     ""
   ]
 }
 ```
+
+> #### 可选配置
+>
+> `ntlm` 和 `common` 可以使用代理或者指定字符编码：
+>
+> * 代理配置，如 `"socks5": "127.0.0.1:1080"` ，指定 `socks5` 代理的位置。目前只支持 `socks5`。
+> * 字符编码方式，如 `"charset": "utf-16"` ，指定使用 `utf-16` 解码网站内容。默认使用 `utf-8
 
 ### config
 
@@ -156,3 +189,16 @@ class Setting:
         #...
 ```
 
+## 更新日志
+
+### v2.0
+
+* 不再使用 `while` 实现持续运行，请自行使用 `crontab` 或类似功能设置定时任务
+* 支持 `ntlm` 类型的认证
+* 支持自定义的 `decode` 方式
+* `ntlm` 和 `commonWatch` 支持通过代理进行请求（可以与 [Hagb/docker-easyconnect](https://github.com/Hagb/docker-easyconnect) 配合用于校园网内资源）
+* 修复了一些问题
+
+## Todo
+
+* [ ] 重构为面向对象的结构
