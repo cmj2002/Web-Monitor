@@ -2,9 +2,11 @@
 
 监视网站更改并通过邮件通知，支持通过邮件订阅和取消订阅。
 
+程序原理见我的博客上的[文章](https://blog.caomingjun.com/2021/09/29/%E7%94%A8python%E7%BC%96%E5%86%99%E7%BD%91%E9%A1%B5%E6%9B%B4%E6%96%B0%E6%8F%90%E9%86%92%E7%A8%8B%E5%BA%8F/)。
+
 ## 数据库配置
 
-使用前需要先在服务器上安装并配置[MongoDB](https://www.mongodb.com/zh-cn) 。
+使用前需要先在服务器上安装并配置 [MongoDB](https://www.mongodb.com/zh-cn) 。
 
 ### 建立数据库
 
@@ -110,7 +112,7 @@
 
 除了 `sleep_time` 是 `Int32` 或 `Int64` 类型，其他都是 `String` 类型。
 
-```json
+```
 {
     "notifier":"<用于发送提醒邮件的邮箱>",
     "notifierSMTP":"<用于发送提醒邮件的邮箱密码或授权码>",
