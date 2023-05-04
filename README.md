@@ -1,5 +1,9 @@
 # Web Monitor
 
+**本仓库已存档，不再更新维护。**
+
+**This repository has been archived and will no longer be updated.**
+
 监视网站更改并通过邮件通知，支持通过邮件订阅和取消订阅。
 
 程序原理见我的博客上的[文章](https://blog.caomingjun.com/2021/09/29/%E7%94%A8python%E7%BC%96%E5%86%99%E7%BD%91%E9%A1%B5%E6%9B%B4%E6%96%B0%E6%8F%90%E9%86%92%E7%A8%8B%E5%BA%8F/)。
